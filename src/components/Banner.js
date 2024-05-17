@@ -22,7 +22,7 @@ const Banner = () => {
   return (
     <Box sx={{
         bgcolor:"#37626f",
-        height:"40vh", 
+        height:"30vh", 
         display:"flex", 
         justifyContent:"space-between",
         padding:"5rem 8rem",

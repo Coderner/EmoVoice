@@ -3,6 +3,7 @@ import { Box } from '@mui/material'
 import styled from "@emotion/styled"
 import Header from './Header'
 import Banner from './Banner'
+import GetStarted from './GetStarted'
 
 const TextBox = styled(Box)({
     fontFamily:"Poppins"
@@ -14,6 +15,7 @@ const Main = () => {
         {/* <Header/> */}
         <Box sx={{width:"100%"}}>
              <Banner/>
+             <GetStarted/>
         </Box>
     </Box>
   )
