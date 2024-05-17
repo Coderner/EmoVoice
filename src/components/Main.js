@@ -4,6 +4,8 @@ import styled from "@emotion/styled"
 import Header from './Header'
 import Banner from './Banner'
 import GetStarted from './GetStarted'
+import Result from './Result'
+import Action from './Info'
 
 const TextBox = styled(Box)({
     fontFamily:"Poppins"
@@ -16,6 +18,8 @@ const Main = () => {
         <Box sx={{width:"100%"}}>
              <Banner/>
              <GetStarted/>
+             <Result/>
+             <Action/>
         </Box>
     </Box>
   )
