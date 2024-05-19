@@ -1,8 +1,43 @@
 import React, { useState } from 'react'
 import { Box, Button } from '@mui/material'
 import styled from "@emotion/styled"
-import Recorder from './Recorder'
 import axios from 'axios'
+import { AudioRecorder } from 'react-audio-voice-recorder';
+
+const addAudioElement = async(blob) => {
+  const url = URL.createObjectURL(blob);
+  const audio = document.createElement("audio");
+  audio.src = url;
+  console.log(url);
+  audio.controls = true;
+  document.body.appendChild(audio);
+  console.log({ audio: blob });
+  try {
+    const emotionResponse = await checkEmotion({ audio: blob });
+    console.log("Emotion Analysis Result:", emotionResponse);
+  } catch (error) {
+    console.error("Error during emotion analysis:", error);
+  }
+};
+
+const checkEmotion = async({audio}) =>{
+  try {
+      const formData = new FormData();
+      formData.append('audio', audio);
+
+      const res = await axios.request({
+          method: 'POST',
+          url: 'https://audio-emotion.onrender.com/predict-emotion',
+          data: formData,
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+      });
+      return res;
+  } catch (error) {
+      console.error(error);
+  }
+}
 
 const TextBox = styled(Box)({
     fontFamily:"Poppins",
@@ -70,7 +105,16 @@ const GetStarted = () => {
                     "{quote}"
                   </TextBox>
              ):null}
-            <Recorder/>
+            <AudioRecorder 
+              onRecordingComplete={addAudioElement}
+              audioTrackConstraints={{
+                noiseSuppression: true,
+                echoCancellation: true,
+              }} 
+              downloadOnSavePress={true}
+              downloadFileExtension="webm"
+              // mimeType="audio/wav"
+            />
     </Box>
   )
 }
