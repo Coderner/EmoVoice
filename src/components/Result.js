@@ -1,12 +1,13 @@
 import React from 'react'
-import { Box } from '@mui/material'
+import { Box, CircularProgress } from '@mui/material'
 import styled from "@emotion/styled"
 
 const TextBox = styled(Box)({
   fontFamily:"Poppins",
 })
 
-const Result = () => {
+const Result = ({emotion, apiCalling}) => {
+
   return (
     <Box sx={{
       display:"flex", 
@@ -27,9 +28,8 @@ const Result = () => {
                 Result
          </TextBox>
          <TextBox sx={{fontSize:"1.5rem", fontWeight:"500", marginBottom:"1rem"}}>
-                Happy!
+                {apiCalling?<CircularProgress/>:emotion}
          </TextBox>
-         <TextBox>Good to see you in good mood!</TextBox>
       </Box>
     </Box>
   )

@@ -1,51 +1,55 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Box, Button } from '@mui/material'
 import styled from "@emotion/styled"
 import axios from 'axios'
-import { AudioRecorder } from 'react-audio-voice-recorder';
-
-const addAudioElement = async(blob) => {
-  const url = URL.createObjectURL(blob);
-  const audio = document.createElement("audio");
-  audio.src = url;
-  console.log(url);
-  audio.controls = true;
-  document.body.appendChild(audio);
-  console.log({ audio: blob });
-  try {
-    const emotionResponse = await checkEmotion({ audio: blob });
-    console.log("Emotion Analysis Result:", emotionResponse);
-  } catch (error) {
-    console.error("Error during emotion analysis:", error);
-  }
-};
-
-const checkEmotion = async({audio}) =>{
-  try {
-      const formData = new FormData();
-      formData.append('audio', audio);
-
-      const res = await axios.request({
-          method: 'POST',
-          url: 'https://audio-emotion.onrender.com/predict-emotion',
-          data: formData,
-          headers: {
-            'Content-Type': 'multipart/form-data'
-          }
-      });
-      return res;
-  } catch (error) {
-      console.error(error);
-  }
-}
+import { AudioRecorder, useAudioRecorder } from 'react-audio-voice-recorder';
+axios.defaults.headers.common['Cross-Origin-Embedder-Policy'] = 'require-corp';
+axios.defaults.headers.common['Cross-Origin-Opener-Policy'] = 'same-origin';
 
 const TextBox = styled(Box)({
     fontFamily:"Poppins",
 })
 
-const GetStarted = () => {
-
+const GetStarted = ({setEmotion, setApiCalling, apiCalling}) => {
     const [quote,setQuote] = useState("");
+    const [file,setFile] = useState(null);
+
+    const handleFileChange = (e) =>{
+      console.log(e);
+      if (e.target.files) {
+        setFile(e.target.files[0]);
+      }
+    }
+
+  const recorderControls = useAudioRecorder();
+  const addAudioElement = (blob) => {
+    const url = URL.createObjectURL(blob);
+    const audio = document.createElement("audio");
+    audio.src = url;
+    audio.controls = true;
+    document.body.appendChild(audio);
+  };
+
+  const checkEmotion = async() =>{
+    setApiCalling(true);
+    let formData = new FormData();
+    formData.append("audio", file);
+    try {
+        const res = await axios.request({
+            method: 'POST',
+            url: 'https://audio-emotion.onrender.com/predict-emotion',
+            data: formData,
+            headers: {
+              'Content-Type': 'multipart/form-data'
+            }
+        });
+        console.log(res);
+        setEmotion(res.data.emotion);
+    } catch (error) {
+        console.error(error);
+    }
+    setApiCalling(false);
+  }
 
     const fetchQuote = async() =>{
         try {
@@ -105,16 +109,25 @@ const GetStarted = () => {
                     "{quote}"
                   </TextBox>
              ):null}
-            <AudioRecorder 
-              onRecordingComplete={addAudioElement}
-              audioTrackConstraints={{
-                noiseSuppression: true,
-                echoCancellation: true,
-              }} 
-              downloadOnSavePress={true}
-              downloadFileExtension="webm"
-              // mimeType="audio/wav"
-            />
+             <AudioRecorder 
+                onRecordingComplete={(blob) => addAudioElement(blob)}
+                downloadOnSavePress
+                recorderControls={recorderControls}
+              />
+              <input type="file" onChange={handleFileChange}/>
+              <Button sx={{
+                        backgroundColor:"#ed8717",
+                        color:"white",
+                        borderRadius:"34px",
+                        padding:"0.75rem",
+                        textTransform:"none",
+                        fontFamily:"Poppins",
+                        fontWeight:"500"
+                      }} 
+                       disabled={apiCalling}
+                       onClick={checkEmotion}>
+                        Check
+              </Button>
     </Box>
   )
 }

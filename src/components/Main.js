@@ -1,13 +1,10 @@
-import React, { useEffect } from 'react'
+import React, { useState } from 'react'
 import { Box } from '@mui/material'
 import styled from "@emotion/styled"
-import Header from './Header'
 import Banner from './Banner'
 import GetStarted from './GetStarted'
 import Result from './Result'
 import Action from './Info'
-import WavRecorder from './WavConverter'
-import axios from 'axios'
 
 const TextBox = styled(Box)({
     fontFamily:"Poppins"
@@ -15,19 +12,16 @@ const TextBox = styled(Box)({
 
 const Main = () => {
 
-  // useEffect(()=>{
-  //   checkEmotion("hello");
-  // },[]);
+  const [emotion,setEmotion]=useState("");
+  const [apiCalling,setApiCalling]=useState(false);
 
   return (
     <Box sx={{width:"100%"}}>
-        {/* <Header/> */}
         <Box sx={{width:"100%"}}>
              <Banner/>
-             <GetStarted/>
-             <Result/>
+             <GetStarted setEmotion={setEmotion} setApiCalling={setApiCalling} apiCalling={apiCalling}/>
+             <Result emotion={emotion} apiCalling={apiCalling}/>
              <Action/>
-             {/* <WavRecorder/> */}
         </Box>
     </Box>
   )
